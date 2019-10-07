@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Dexie.Syncable.ISyncProtocol</title>
+  <meta name="description" content="The easiest way to use IndexedDB. A lightweight, minimalistic wrapper that provides a straightforward API for developers using IndexedDB.">
+
+  <link href='/assets/css/bootstrap.min.css' rel='stylesheet'>
+  <link href='/assets/css/prism_docs.css' rel='stylesheet'>
+  <link href='/assets/css/stylesheet.css' rel='stylesheet'>
+  <link href="/assets/css/docs.css" rel="stylesheet">
+  <link href="/assets/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="shortcut icon" href="/assets/images/favicon-yuri.png" />
+  <script src="/assets/js/offline-switch.js"></script>
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+  <div class='jumbotron docs-page-jumbotron'>
+    <div class='container'>
+      <a href="/">
+        <img src="/assets/images/dexie-logo-icon.svg" class="dexie-logo-icon" />
+        <h1>Dexie.js Docs</h1>
+        <div id="offline-switch"
+          title="Make Dexie documentation available offline">
+          <span id="offlineOffHeading">Make available offline</span>
+				  <span id="offlineOnHeading">Available offline</span> <label class="switch">
+            <input
+              id="offline-checkbox"
+              type="checkbox"
+              onchange="setOffline(event.target.checked)">
+            <span class="slider round"></span>
+          </label>
+          <script>
+            updateSwitchFromStorage();
+          </script>
+        </div>
+        <!-- Github star button -->
+        <div id="star-button">
+          <iframe src="https://ghbtns.com/github-btn.html?user=dfahlander&repo=Dexie.js&type=star&count=true"
+          frameborder="0" scrolling="0" width="94px" height="20px"></iframe>
+        </div>
+        <!-- Place this tag right after the last button or just before your close body tag. -->
+        <script async defer id="github-bjs" src="https://buttons.github.io/buttons.js"></script>
+      </a>
+    </div>
+  </div>
+</header>
+
+
+    <main class="container">
+      <div class="row">
+  <div class="col-xs-12 col-md-8">
+    <div class="row docs-page-subheader">
+      <h1 class="col-xs-12 col-md-10">Dexie.Syncable.ISyncProtocol</h1>
+      <div class="hidden-xs col-md-2">
+        <a class="btn btn-primary btn-edit-doc-page" href="https://github.com/dfahlander/dexie.js-web/edit/gh-pages/docs/Syncable/Dexie.Syncable.ISyncProtocol.md">
+          <span class="glyphicon glyphicon-edit"></span>&nbsp; Edit
+        </a>
+      </div>
+    </div>
+
+    <div class="row docs-page-subtitle">
+      <div class="col-xs-12">
+        
+      </div>
+    </div>
+    <div class="row docs-page">
+      <div class="col-xs-12">
+        <p>Interface to implement for use with <a href="/docs/Syncable/Dexie.Syncable.js">Dexie.Syncable</a>.</p>
+
+<h2 id="interface">Interface</h2>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">ISyncProtocol</span> <span class="p">{</span>
+    <span class="cm">/** Maximum number of changes per sync() call. Default Infinity. */</span>
+    <span class="nx">partialsThreshold</span><span class="p">?:</span> <span class="nx">number</span><span class="p">;</span>
+
+    <span class="cm">/** Called by the framework to send changes to server and
+     * receive changes back from server. */</span>
+    <span class="nx">sync</span> <span class="p">(</span>
+        <span class="nx">context</span><span class="p">:</span> <span class="nx">IPersistedContext</span><span class="p">,</span>
+        <span class="nx">url</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+        <span class="nx">options</span><span class="p">:</span> <span class="nb">Object</span><span class="p">,</span>
+        <span class="nx">baseRevision</span><span class="p">:</span> <span class="nx">any</span><span class="p">,</span>
+        <span class="nx">syncedRevision</span><span class="p">:</span> <span class="nx">any</span><span class="p">,</span>
+        <span class="nx">changes</span><span class="p">:</span> <span class="nx">IDatabaseChange</span><span class="p">[],</span>
+        <span class="nx">partial</span><span class="p">:</span> <span class="kr">boolean</span><span class="p">,</span>
+        <span class="nx">applyRemoteChanges</span><span class="p">:</span> <span class="nx">ApplyRemoteChangesFunction</span><span class="p">,</span>
+        <span class="nx">onChangesAccepted</span><span class="p">:</span> <span class="p">()</span><span class="o">=&gt;</span><span class="k">void</span><span class="p">,</span>
+        <span class="nx">onSuccess</span><span class="p">:</span> <span class="p">(</span><span class="nx">continuation</span><span class="p">:</span> <span class="nx">Continuation</span><span class="p">)</span><span class="o">=&gt;</span><span class="k">void</span><span class="p">,</span>
+        <span class="nx">onError</span><span class="p">:</span> <span class="p">(</span><span class="nx">error</span><span class="p">:</span> <span class="nx">any</span><span class="p">,</span> <span class="nx">again</span><span class="p">?:</span> <span class="nx">number</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">void</span><span class="p">)</span>
+    <span class="p">:</span> <span class="k">void</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Referred Types:</p>
+
+<ul>
+  <li><a href="/docs/Syncable/Dexie.Syncable.IPersistedContext">IPersistedContext</a></li>
+  <li><a href="/docs/Syncable/Dexie.Syncable.IDatabaseChange">IDatabaseChange</a></li>
+  <li><a href="#applyremotechanges--function-changes-lastrevision-partial-clear">ApplyRemoteChangesFunction</a></li>
+  <li><a href="#onsuccess--function-continuation">Continuation</a></li>
+</ul>
+
+<p><em>This interface is defined in <a href="https://github.com/dfahlander/Dexie.js/blob/master/addons/Dexie.Syncable/api.d.ts">addons/Dexie.Syncable/api.d.ts</a></em></p>
+
+<h2 id="description">Description</h2>
+
+<p>The interface to implement to enable sync with a remote database server. The remote database server may be SQL- or NOSQL based as long as it is capable of storing JSON compliant objects into some kind of object stores and reference them by a primary key.</p>
+
+<p>The server must also be revision- and changes aware. This is something that for many databases needs to be implemented by a REST- or WebSocket gateway between the client and the backend database.</p>
+
+<h2 id="sample-implementations">Sample Implementations</h2>
+
+<ul>
+  <li><a href="https://github.com/nponiros/sync_client">https://github.com/nponiros/sync_client</a></li>
+  <li><a href="https://github.com/dfahlander/Dexie.js/tree/master/samples/remote-sync/ajax/AjaxSyncProtocol.js">AjaxSyncProtocol.js</a></li>
+  <li><a href="https://github.com/dfahlander/Dexie.js/tree/master/samples/remote-sync/websocket/WebSocketSyncProtocol.js">WebSocketSyncProtocol.js</a></li>
+  <li>with backend sample: <a href="https://github.com/dfahlander/Dexie.js/blob/master/samples/remote-sync/websocket/WebSocketSyncServer.js">WebSocketSyncServer.js</a></li>
+</ul>
+
+<h2 id="remarks">Remarks</h2>
+
+<p>Implementors of ISyncProtocol may be independent on any framework. There are no dependencies to Dexie.js or Dexie.Syncable.js. Likewise, consumers of ISyncProtocol instance must not be just Dexie.Syncable, but could be used in other frameworks as well.</p>
+
+<p>Some assumptions are made upon how the database is structured though. We assume that:</p>
+<ul>
+  <li>Databases has 1..N tables. (For NOSQL databases without tables, tables can be emulated using one DB per table)</li>
+  <li>Each table has a primary key.</li>
+  <li>The primary key is a UUID of some kind since auto-incremented primary keys are not suitable for syncronization (auto-incremented key would work but changes of conflicts would increase on create).</li>
+  <li>A database record is a JSON compatible object. For SQL databases, this can be accomplished using server-side JSON serializers to map between SQL columns and JSON properties.</li>
+  <li>Always assume that the client may send the same set of changes twice. For example if client sent changes that server stored, but network went down before client got the ack from server, the client may try resending same set of changes again. This means that the same Object Create change may be sent twice etc.</li>
+  <li>The implementation must not fail if trying to create an object with the same key twice, or delete an object with a key that does not exist.</li>
+  <li>Client and server must resolve conflicts in such way that the result on both sides are equal.</li>
+  <li>Since a server is the point of the most up-to-date database, conflicts should be resolved by prefering server changes over client changes. This makes it predestinable for client that the more often the client syncs, the more chance to prohibit conflicts.</li>
+</ul>
+
+<h2 id="parameters">Parameters</h2>
+
+<h3 id="context--ipersistedcontext">context : <a href="/docs/Syncable/Dexie.Syncable.IPersistedContext">IPersistedContext</a></h3>
+<p>A context that you may store persistent state within if you’d need to. You may set any custom properties on the context. The context is an arbritary document that will persist within the _syncNodes table in property ‘syncContext’.</p>
+
+<p>The same context instance will be given for all calls to sync() as long as the URL is the same. If calling context.save(), all properties stored on the context will be persisted in an internal table contained by the same database that is being synced.</p>
+
+<p>An example on how to use this context can be found in: <a href="https://github.com/dfahlander/Dexie.js/blob/master/samples/remote-sync/websocket/WebSocketSyncProtocol.js">WebSocketSyncProtocol.js</a>.</p>
+
+<h3 id="url--string">url : String</h3>
+<p>URL of the remote node to establish a continous sync with.</p>
+
+<h3 id="options--object">options : Object</h3>
+<p>Additional information from caller. Example of options could be timeout settings, poll intervals, authentication credentials, etc. The options are optional and implementation specific. Options maps to the ‘options’ parameter in <a href="/docs/Syncable/db.syncable.connect()">db.syncable.connect()</a></p>
+
+<h3 id="baserevision">baseRevision</h3>
+
+<p>Server revision that the changes are based on. Should be used when resolving conflicts. On initial sync, this value will be null. If having synced before, this will one of the values that has been sent previously to <a href="#applyremotechanges--function-changes-lastrevision-partial-clear">applyRemoteChanges()</a>, but not nescessarily the last value. baseRevision is persisted so it will survive a reboot.</p>
+
+<p>A revision can be of any JS type (such as Number, String, Array, Date or Object). Remote node should use this value to know if there are conflicts. If changes on the remote node was made after this revision, and any of those changes modified the same properties on the same objects, it must be considered a conflict and the remote node should resolve that conflict by choosing the remote node’s version of the conflicting properties unless it is a conflict where client has deleted an object that server has updated - then the deletion should win over the update. An implementation of this rule is defined in WebSocketSyncServer.js: function resolveConflicts().</p>
+
+<h3 id="syncedrevision">syncedRevision</h3>
+
+<p>Server revision that local database is in sync with already. On initial sync, this value will be null. If having synced before, this will be the same value that were previously sent by the sync implementor to <a href="#applyremotechanges--function-changes-lastrevision-partial-clear">applyRemoteChanges()</a>. syncedRevision is persisted so even after a reboot, the last value will be remembered. A revision can be of any JS type (such as Number, String, Array, Date or Object).</p>
+
+<p>Server should use this value to know which changes to send to client. Server should only send changes occurred after given syncedRevision.</p>
+
+<p>The difference between baseRevision and syncedRevision is:</p>
+<ul>
+  <li>baseRevision: revision that given ‘changes’ array are based upon. Should be used by remote node when resolving conflicts.</li>
+  <li>syncedRevision: revision that local node has already applied. Should be used by remote node when filtering which changes to send to local node.</li>
+</ul>
+
+<h3 id="changes--arrayidatabasechange">changes : Array&lt;<a href="/docs/Syncable/Dexie.Syncable.IDatabaseChange">IDatabaseChange</a>&gt;</h3>
+
+<p>Local changes to sync to remote node. This array will contain changes that has occurred locally since last sync. If this is the initial sync, framework will want to upload the entire local database to the server. If initial sync or if having been offline for a while, local database might contain much changes to send. Of those reasons, it is not guaranteed that ALL client changes are delivered in this first call to sync(). If number of changes are ‘enormous’, the framework may choose to only apply a first chunk of changes and when onSuccess() is called by your implementation, framework will send the remaining changes by calling sync() again, or continuation.react depending on the continuation method given in the call to onSuccess().</p>
+
+<p>The argument ‘partial’ will tell whether all changes are sent or if it is only a partial change set. See parameter ‘partial’. Note that if partial = true, your server should queue the changes and not commit them yet but wait until all changes have been sent (partial = false).</p>
+
+<h3 id="partial">partial</h3>
+
+<p>If true, the changes only contains a part of the changes. The part might be cut in the middle of a transaction so the changes must not be applied until another request comes in from same client with partial = false. A sync server should store partial changes into a temporary storage until the same client sends a new request with partial = false. For an example of how to hande this, see WebSocketSyncServer.js under <a href="https://github.com/dfahlander/Dexie.js/tree/master/samples/remote-sync/websocket/">samples/remote-sync/websocket</a>.</p>
+
+<p>As of dexie-syncable@^1.0.0-beta.1, <em>partial</em> can only ever become true if your ISyncProtocol.partialThreshold was defined as a number less than Infinity.</p>
+
+<h3 id="applyremotechanges--function-changes-lastrevision-partial-clear">applyRemoteChanges : function (changes, lastRevision, partial, clear)</h3>
+
+<p>Call this function whenever the response stream from the remote node contains new changes to apply. Provide the array of IDatabaseChange objects as well as the revision of the last change in the change set. If there are enormous amount of changes (would take too much RAM memory to put in a single array), you may call this function several times with ‘partial’ set to true until the last set of changes arrive. The framework will not commit the changes until method is called with partial = false or undefined.</p>
+
+<p>The ‘clear’ argument is another optional Boolean. As of current version (0.9.1), this flag has no effect yet. The intent is that if the flag is set, the framework should clear all existing data before applying changes. This flag could be useful in case the given baseRevision was too old for the server. Server may have cleared out old revisions to save space and if clients come in with a baseRevision older than the earliest revision known by server server may set this flag and provide a changes array of CREATEs only for all objects in the database.</p>
+
+<h4 id="parameters-to-applyremotechanges">Parameters to applyRemoteChanges()</h4>
+
+<ul>
+  <li>changes : Array&lt;<a href="/docs/Syncable/IDatabaseChange">IDatabaseChange</a>&gt; - Remote changes to apply locally</li>
+  <li>lastRevision : <strong><em>any</em></strong> - Revision of last change in given changes.</li>
+  <li>partial : Boolean - If true, framework wont commit these changes yet</li>
+  <li>clear : Boolean - Not yet used. In future version, when this flag is true, framework will clear all local data prior to applying changes.</li>
+</ul>
+
+<h3 id="onchangesaccepted--function-">onChangesAccepted : function ()</h3>
+
+<p>Call this function when you get an ack from the server that the changes has been recieved. Must be called no matter if changes were partial or not partial. This will mark the changes as handled so that they need not to be sent again to the particular remote node being synced.</p>
+
+<h3 id="onsuccess--function-continuation">onSuccess : function (continuation)</h3>
+
+<p>Call this function when all changes you got from the server has been sent to applyRemoteChanges(). Note that not all changes from client has to be sent or acked yet (nescessarily).</p>
+
+<ul>
+  <li>Sample when using a poll strategy:</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">onSuccess</span><span class="p">({</span><span class="na">again</span><span class="p">:</span> <span class="mi">1000</span><span class="p">});</span>
+</code></pre></div></div>
+
+<ul>
+  <li>Sample when using an immediate reaction strategy:</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">onSuccess</span><span class="p">({</span>
+    <span class="na">react</span><span class="p">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">changes</span><span class="p">,</span> <span class="nx">baseRevision</span><span class="p">,</span> <span class="nx">partial</span><span class="p">,</span> <span class="nx">onChangesAccepted</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// Send changes, baseRevisoin and partial to server</span>
+        <span class="c1">// When server acks, call onChangesAccepted();</span>
+    <span class="p">},</span>
+    <span class="na">disconnect</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// Disconnect from server!</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>The given continuation object tells the framework how to continue syncing. Possible values are:</p>
+<ul>
+  <li><code class="highlighter-rouge">{ again: milliseconds }</code> - tells the framework to call sync() again in given milliseconds.</li>
+  <li><code class="highlighter-rouge">{ react: onLocalChanges, disconnect: disconnectFunction }</code> - tells the framework that you will continue listening on both client- and server changes simultanously. When you get changes from server, you will once again call applyRemoteChanges() and when client changes arrive, you will get notified in your ‘react’ function: function (changes, baseRevision, partial, onChangesAccepted). When the framework want to close down your provider, it will call your provided disconnect function. Note that the disconnect function is only required when using the ‘react’ pattern. This is because the ‘again’ pattern is always initiated by the framework.</li>
+</ul>
+
+<p>Note that onSuccess() must only be called once. If continuing using the ‘react’ pattern, you will no more call onSuccess(). (If using the ‘again’ pattern, the next call will be to sync() again and thus the same implementation as initial sync and therefore you must call onSuccess() again).</p>
+
+<p>Note also that the onChangesAccepted callback provided in your react() function is not the same as the onChangesAccepted() provided in your main sync() method and they must not be mixed. The onChangesAccepted() in sync() should be called when the changes array in sync() has been accepted by remote server, while the onChangesAccepted() in react() should be called when the changes array in react() has been accepted by remote server. Please review <a href="https://github.com/dfahlander/Dexie.js/tree/master/samples/remote-sync/websocket/WebSocketSyncProtocol.js">WebSocketSyncProtocol.js</a> where this is implemented.</p>
+
+<h3 id="onerror--function-err-again">onError : function (err, again)</h3>
+
+<p>Call this function if an error occur. Provide the error object (exception or other toStringable object such as a String instance) as well as the again value that should be number of milliseconds until trying to call sync() again. For repairable errors, such as network down, provide a value for again so that the framework may try again later. If the error is non-repairable (wouldnt be fixed if trying again later), you should provide Infinity, null or undefined as value for the again parameter.</p>
+
+<p>If an error occur while listening for server changes after having gone over to the ‘react’ pattern, you may also call onError() to inform the framework that the remote node has gone down. If doing so, your sync call will be terminated and you will no longer recieve any local changes to your ‘react’ callback. Instead you inform the framework about the number of milliseconds until it should call sync() again to reestablish the connection.</p>
+
+      </div>
+    </div>
+  </div>
+  <div class="col-xs-12 col-md-4">
+    <div class="row docs-page-subheader">
+      <h3>Table of Contents</h3>
+      <div class="docs-toc-wrapper">
+        <ul class="docs-toc">
+          
+          
+            
+          
+            
+          
+            
+              <li>
+                <a href="/docs/API-Reference">API Reference</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Tutorial/Best-Practices">Best Practices</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Tutorial/Building-Addons">Building Addons</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection">Collection</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.and()">Collection.and()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.clone()">Collection.clone()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.count()">Collection.count()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.delete()">Collection.delete()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.desc()">Collection.desc()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.distinct()">Collection.distinct()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.each()">Collection.each()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.eachKey()">Collection.eachKey()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.eachPrimaryKey()">Collection.eachPrimaryKey()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.eachUniqueKey()">Collection.eachUniqueKey()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.filter()">Collection.filter()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.first()">Collection.first()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.keys()">Collection.keys()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.last()">Collection.last()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.limit()">Collection.limit()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.modify()">Collection.modify()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.offset()">Collection.offset()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.or()">Collection.or()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.primaryKeys()">Collection.primaryKeys()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.raw()">Collection.raw()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.reverse()">Collection.reverse()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.sortBy()">Collection.sortBy()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.toArray()">Collection.toArray()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.uniqueKeys()">Collection.uniqueKeys()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.until()">Collection.until()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Compound-Index">Compound Index</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Tutorial/Consuming-dexie-as-a-module">Consuming Dexie as a module</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Deprecations">Deprecations</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DerivedWork">Derived Work</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Tutorial/Design">Design</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie">Dexie</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.AbortError">Dexie.AbortError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.BulkError">Dexie.BulkError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.ConstraintError">Dexie.ConstraintError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.DataCloneError">Dexie.DataCloneError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.DataError">Dexie.DataError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.DatabaseClosedError">Dexie.DatabaseClosedError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.IncompatiblePromiseError">Dexie.IncompatiblePromiseError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.InternalError">Dexie.InternalError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.InvalidAccessError">Dexie.InvalidAccessError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.InvalidArgumentError">Dexie.InvalidArgumentError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.InvalidStateError">Dexie.InvalidStateError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.InvalidTableError">Dexie.InvalidTableError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.MissingAPIError">Dexie.MissingAPIError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.ModifyError">Dexie.ModifyError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.NoSuchDatabaseError">Dexie.NoSuchDatabaseErrorError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.NotFoundError">Dexie.NotFoundError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Observable/Dexie.Observable">Dexie.Observable</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Observable/Dexie.Observable.DatabaseChange">Dexie.Observable.DatabaseChange</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.OpenFailedError">Dexie.OpenFailedError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.PrematureCommitError">Dexie.PrematureCommitError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.QuotaExceededError">Dexie.QuotaExceededError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.ReadOnlyError">Dexie.ReadOnlyError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.SchemaError">Dexie.SchemaError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.SubTransactionError">Dexie.SubTransactionError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/Dexie.Syncable.js">Dexie.Syncable</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/Dexie.Syncable.IDatabaseChange">Dexie.Syncable.IDatabaseChange</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/Dexie.Syncable.IPersistedContext">Dexie.Syncable.IPersistentContext</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/Dexie.Syncable.ISyncProtocol">Dexie.Syncable.ISyncProtocol</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/Dexie.Syncable.StatusTexts">Dexie.Syncable.StatusTexts</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/Dexie.Syncable.Statuses">Dexie.Syncable.Statuses</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/Dexie.Syncable.registerSyncProtocol()">Dexie.Syncable.registerSyncProtocol()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.TimeoutError">Dexie.TimeoutError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.TransactionInactiveError">Dexie.TransactionInactiveError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.UnknownError">Dexie.UnknownError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.UnsupportedError">Dexie.UnsupportedError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.UpgradeError">Dexie.UpgradeError()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.VersionChangeError">Dexie.VersionChangeError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.VersionError">Dexie.VersionError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.%5Btable%5D">Dexie.[table]</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.addons">Dexie.addons</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.async()">Dexie.async()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.backendDB()">Dexie.backendDB()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.close()">Dexie.close()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.currentTransaction">Dexie.currentTransaction</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.debug">Dexie.debug</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.deepClone()">Dexie.deepClone()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.defineClass()">Dexie.defineClass()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.delByKeyPath()">Dexie.delByKeyPath()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.delete()">Dexie.delete()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.derive()">Dexie.derive()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.events()">Dexie.events()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.exists()">Dexie.exists()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.extend()">Dexie.extend()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.fakeAutoComplete()">Dexie.fakeAutoComplete()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.getByKeyPath()">Dexie.getByKeyPath()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.getDatabaseNames()">Dexie.getDatabaseNames()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.hasFailed()">Dexie.hasFailed()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.ignoreTransaction()">Dexie.ignoreTransaction()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.isOpen()">Dexie.isOpen()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie.js">Dexie.js</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.name">Dexie.name</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.on()">Dexie.on()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.on.blocked">Dexie.on.blocked</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.on.error">Dexie.on.error</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.on.populate">Dexie.on.populate</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.on.populate-(old-version)">Dexie.on.populate-(old-version)</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.on.ready">Dexie.on.ready</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.on.versionchange">Dexie.on.versionchange</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.open()">Dexie.open()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.override()">Dexie.override()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.semVer">Dexie.semVer</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.setByKeyPath()">Dexie.setByKeyPath()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.shallowClone()">Dexie.shallowClone()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.spawn()">Dexie.spawn()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.table()">Dexie.table()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.tables">Dexie.tables</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.transaction()">Dexie.transaction()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.transaction()-(old-version)">Dexie.transaction()-(old-version)</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.verno">Dexie.verno</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.version">Dexie.version</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.version()">Dexie.version()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.vip()">Dexie.vip()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.waitFor()">Dexie.waitFor()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/DexieError">DexieError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/">Docs Home</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Download">Download</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/ExportImport/dexie-export-import">Export and Import Database</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Tutorial/Getting-started">Getting Started</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Tutorial/Hello-World">Hello World</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/StorageManager">How To Use the StorageManager API</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/inbound">Inbound</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/IndexSpec">IndexSpec</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Indexable-Type">Indexable Type</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/IndexedDB-on-Safari">IndexedDB on Safari</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Tutorial/Migrating-existing-DB-to-Dexie">Migrating existing DB to Dexie</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/MultiEntry-Index">MultiEntry Index</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Promise/Promise">Promise</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Promise/Promise.PSD">Promise.PSD</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Promise/Promise.catch()">Promise.catch()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Promise/Promise.finally()">Promise.finally()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Promise/Promise.on.error">Promise.on.error</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Promise/Promise.onuncatched">Promise.onuncatched</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Questions-and-Answers">Questions and Answers</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Releasing-Dexie">Releasing Dexie</a>
+              </li>
+            
+          
+            
+          
+            
+              <li>
+                <a href="/docs/Samples">Samples</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Simplify-with-yield">Simplify with yield</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table">Table</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/TableSchema">Table Schema</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.add()">Table.add()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.bulkAdd()">Table.bulkAdd()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.bulkDelete()">Table.bulkDelete()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.bulkGet()">Table.bulkGet()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.bulkPut()">Table.bulkPut()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.clear()">Table.clear()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.count()">Table.count()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.defineClass()">Table.defineClass()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.delete()">Table.delete()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.each()">Table.each()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.filter()">Table.filter()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.get()">Table.get()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.hook('creating')">Table.hook('creating')</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.hook('deleting')">Table.hook('deleting')</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.hook('reading')">Table.hook('reading')</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.hook('updating')">Table.hook('updating')</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.limit()">Table.limit()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.mapToClass()">Table.mapToClass()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.name">Table.name</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.offset()">Table.offset()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.orderBy()">Table.orderBy()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.put()">Table.put()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.reverse()">Table.reverse()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.schema">Table.schema</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.toArray()">Table.toArray()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.toCollection()">Table.toCollection()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.update()">Table.update()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.where()">Table.where()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/The-Three-Main-Limitations-of-IndexedDB">The three main limitations of IndexedDB</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Transaction/Transaction">Transaction</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Transaction/Transaction.abort()">Transaction.abort()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Transaction/Transaction.on.abort">Transaction.on.abort</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Transaction/Transaction.on.complete">Transaction.on.complete</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Transaction/Transaction.on.error">Transaction.on.error</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Transaction/Transaction.table()">Transaction.table()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Tutorial/">Tutorial</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Typescript">Typescript</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Tutorial/Understanding-the-basics">Understanding the basics</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Version/Version">Version</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Version/Version.stores()">Version.stores()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Version/Version.upgrade()">Version.upgrade()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause">WhereClause</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.above()">WhereClause.above()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.aboveOrEqual()">WhereClause.aboveOrEqual()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.anyOf()">WhereClause.anyOf()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.anyOfIgnoreCase()">WhereClause.anyOfIgnoreCase()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.below()">WhereClause.below()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.belowOrEqual()">WhereClause.belowOrEqual()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.between()">WhereClause.between()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.equals()">WhereClause.equals()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.equalsIgnoreCase()">WhereClause.equalsIgnoreCase()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.inAnyRange()">WhereClause.inAnyRange()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.noneOf()">WhereClause.noneOf()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.notEqual()">WhereClause.notEqual()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.startsWith()">WhereClause.startsWith()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.startsWithAnyOf()">WhereClause.startsWithAnyOf()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.startsWithAnyOfIgnoreCase()">WhereClause.startsWithAnyOfIgnoreCase()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.startsWithIgnoreCase()">WhereClause.startsWithIgnoreCase()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/db.syncable.connect()">db.syncable.connect()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/db.syncable.delete()">db.syncable.delete()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/db.syncable.disconnect()">db.syncable.disconnect()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/db.syncable.getOptions()">db.syncable.getOptions()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/db.syncable.getStatus()">db.syncable.getStatus()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/db.syncable.list()">db.syncable.list()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/db.syncable.on('statusChanged')">db.syncable.on('statusChanged')</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/db.syncable.setFilter()">db.syncable.setFilter()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Promise/unhandledrejection-event">unhandledrejection-event</a>
+              </li>
+            
+          
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+    </main>
+
+    <footer class="container">
+  <p>Dexie.js - A Minimalistic Wrapper for IndexedDB</p>
+  <p>&copy; 2014-2019 Dexie.js is the creation of David Fahlander.</p>
+</footer>
+
+
+    <script src='/assets/js/prism.js'></script>
+
+		<script>
+			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+			})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+			ga('create', 'UA-7780680-5', 'auto');
+			ga('send', 'pageview');
+    </script>
+    <!-- Include dexie for people wanting to open devtools to laborate -->
+		<script async src='https://unpkg.com/dexie'></script>
+    <!-- Highlight anchors the same way as github wiki works -->
+    <script defer src="/assets/js/highlight-anchors.js"></script>
+    
+  </body>
+
+</html>

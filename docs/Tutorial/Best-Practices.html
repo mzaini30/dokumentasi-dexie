@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Best Practices</title>
+  <meta name="description" content="The easiest way to use IndexedDB. A lightweight, minimalistic wrapper that provides a straightforward API for developers using IndexedDB.">
+
+  <link href='/assets/css/bootstrap.min.css' rel='stylesheet'>
+  <link href='/assets/css/prism_docs.css' rel='stylesheet'>
+  <link href='/assets/css/stylesheet.css' rel='stylesheet'>
+  <link href="/assets/css/docs.css" rel="stylesheet">
+  <link href="/assets/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="shortcut icon" href="/assets/images/favicon-yuri.png" />
+  <script src="/assets/js/offline-switch.js"></script>
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+  <div class='jumbotron docs-page-jumbotron'>
+    <div class='container'>
+      <a href="/">
+        <img src="/assets/images/dexie-logo-icon.svg" class="dexie-logo-icon" />
+        <h1>Dexie.js Docs</h1>
+        <div id="offline-switch"
+          title="Make Dexie documentation available offline">
+          <span id="offlineOffHeading">Make available offline</span>
+				  <span id="offlineOnHeading">Available offline</span> <label class="switch">
+            <input
+              id="offline-checkbox"
+              type="checkbox"
+              onchange="setOffline(event.target.checked)">
+            <span class="slider round"></span>
+          </label>
+          <script>
+            updateSwitchFromStorage();
+          </script>
+        </div>
+        <!-- Github star button -->
+        <div id="star-button">
+          <iframe src="https://ghbtns.com/github-btn.html?user=dfahlander&repo=Dexie.js&type=star&count=true"
+          frameborder="0" scrolling="0" width="94px" height="20px"></iframe>
+        </div>
+        <!-- Place this tag right after the last button or just before your close body tag. -->
+        <script async defer id="github-bjs" src="https://buttons.github.io/buttons.js"></script>
+      </a>
+    </div>
+  </div>
+</header>
+
+
+    <main class="container">
+      <div class="row">
+  <div class="col-xs-12 col-md-8">
+    <div class="row docs-page-subheader">
+      <h1 class="col-xs-12 col-md-10">Best Practices</h1>
+      <div class="hidden-xs col-md-2">
+        <a class="btn btn-primary btn-edit-doc-page" href="https://github.com/dfahlander/dexie.js-web/edit/gh-pages/docs/Tutorial/Best-Practices.md">
+          <span class="glyphicon glyphicon-edit"></span>&nbsp; Edit
+        </a>
+      </div>
+    </div>
+
+    <div class="row docs-page-subtitle">
+      <div class="col-xs-12">
+        
+      </div>
+    </div>
+    <div class="row docs-page">
+      <div class="col-xs-12">
+        <h3 id="1-understand-promises">1. Understand Promises</h3>
+
+<p>Make sure you learn at least the basic practices of A+ promises before diving too deep into Dexie.</p>
+
+<p>Here’s a little test. Please review the code below and then ask yourself if you understood what it was doing…</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">doSomething</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// Important: Understand why we use 'return' here and what we actually return!</span>
+    <span class="k">return</span> <span class="nx">db</span><span class="p">.</span><span class="nx">friends</span><span class="p">.</span><span class="nx">where</span><span class="p">(</span><span class="s1">'name'</span><span class="p">).</span><span class="nx">startsWith</span><span class="p">(</span><span class="s1">'A'</span><span class="p">).</span><span class="nx">first</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">aFriend</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">aFriend</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span> <span class="c1">// Important: Understand what 'return' means here!</span>
+    <span class="p">}).</span><span class="nx">then</span> <span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">aFriendsId</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// Important: Understand what it means to return another Promise here:</span>
+        <span class="k">return</span> <span class="nx">fetch</span> <span class="p">(</span><span class="s1">'https://blablabla/friends/'</span> <span class="o">+</span> <span class="nx">aFriendsId</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">}</span>
+
+<span class="c1">// Important: Undestand how you would call and consume the doSomething() function.</span>
+</code></pre></div></div>
+
+<p>Was there any of the “Understand” parts that you didn’t understand? Then you would benefit from learning a little about promises. This will be useful knowledge whatever lib you’ll be using. Some links to dive into:</p>
+
+<ul>
+  <li><a href="http://www.html5rocks.com/en/tutorials/es6/promises/">http://www.html5rocks.com/en/tutorials/es6/promises/</a></li>
+  <li><a href="https://pouchdb.com/2015/05/18/we-have-a-problem-with-promises.html">https://pouchdb.com/2015/05/18/we-have-a-problem-with-promises.html</a></li>
+</ul>
+
+<h3 id="2-be-wise-when-catching-promises">2. Be wise when catching promises!</h3>
+
+<p>Short Version:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Top-level code (such as on event handlers) is where you should catch promises.
+Everywhere else, you should return promises to your callers rather than
+catching them, unless:
+   ...you really handle the error (not just log it)
+   ...you just want to log it, but then also re-throw it. 
+</code></pre></div></div>
+
+<p>Long Version:</p>
+
+<p>It’s bad practice to do this everywhere:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">somePromiseReturningFunc</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">db</span><span class="p">.</span><span class="nx">friends</span><span class="p">.</span><span class="nx">add</span><span class="p">({</span>
+        <span class="na">name</span><span class="p">:</span> <span class="s1">'foo'</span><span class="p">,</span>
+        <span class="na">age</span><span class="p">:</span> <span class="mi">40</span>
+    <span class="p">}).</span><span class="k">catch</span> <span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>It’s much better to do just this:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">somePromiseReturningFunc</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">db</span><span class="p">.</span><span class="nx">friends</span><span class="p">.</span><span class="nx">add</span><span class="p">({</span>
+        <span class="na">name</span><span class="p">:</span> <span class="s1">'foo'</span><span class="p">,</span>
+        <span class="na">age</span><span class="p">:</span> <span class="mi">40</span>
+    <span class="p">});</span>
+    <span class="c1">// Don't catch! The caller wouldn't find out that an error occurred if you do!</span>
+    <span class="c1">// We are returning a Promise, aren't we? Let caller catch it instead!</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>If you catch a promise, your resulting promise will be considered successful. It’s like doing try..catch in a function where it should be done from the caller, or caller’s caller instead. Your flow would continue even after the error has occured.</p>
+
+<p>In transaction scopes, it is even more important to NOT catch promises because if you do, transaction will commit! Catching a promise should mean you have a way to handle the error gracefully. If you don’t have that, don’t catch it!</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">myDataOperations</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">db</span><span class="p">.</span><span class="nx">transaction</span><span class="p">(</span><span class="s1">'rw'</span><span class="p">,</span> <span class="nx">db</span><span class="p">.</span><span class="nx">friends</span><span class="p">,</span> <span class="nx">db</span><span class="p">.</span><span class="nx">pets</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+        <span class="k">return</span> <span class="nx">db</span><span class="p">.</span><span class="nx">friends</span><span class="p">.</span><span class="nx">add</span><span class="p">({</span><span class="na">name</span><span class="p">:</span> <span class="s1">'foo'</span><span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">){</span>
+            <span class="k">return</span> <span class="nx">db</span><span class="p">.</span><span class="nx">pets</span><span class="p">.</span><span class="nx">add</span><span class="p">({</span><span class="na">name</span><span class="p">:</span> <span class="s1">'bar'</span><span class="p">,</span> <span class="na">daddy</span><span class="p">:</span> <span class="nx">id</span><span class="p">});</span>
+        <span class="p">}).</span><span class="nx">then</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">db</span><span class="p">.</span><span class="nx">pets</span><span class="p">.</span><span class="nx">where</span><span class="p">(</span><span class="s1">'name'</span><span class="p">).</span><span class="nx">startsWith</span><span class="p">(</span><span class="s1">'b'</span><span class="p">).</span><span class="nx">toArray</span><span class="p">();</span>
+        <span class="p">}).</span><span class="nx">then</span> <span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">pets</span><span class="p">)</span> <span class="p">{</span>
+            <span class="p">....</span>
+        <span class="p">});</span> <span class="c1">// Don't catch! Transaction SHOULD abort if error occur, shouldn't it?</span>
+
+    <span class="p">});</span> <span class="c1">// Don't catch! Let the caller catch us instead! I mean we are returning a promise, aren't we?!</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>But on an event handler or other root-level scope, always catch! Why?! Because you are the last one to catch it since you are NOT returning Promise! You have no caller that expects a promise and you are the sole responsible of catching and informing the user about any error. If you don’t catch it anywhere, an error will end-up in the standard <a href="https://dexie.org/docs/Promise/unhandledrejection-event.html">unhandledrejection</a> event.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">somePromiseReturningFunc</span><span class="p">().</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">'#appErrorLabel'</span><span class="p">).</span><span class="nx">text</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nx">stack</span> <span class="o">||</span> <span class="nx">err</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>Sometimes you really WANT to handle an explicit error because you know it can happen and you have a way to work around it.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">getHillary</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">db</span><span class="p">.</span><span class="nx">friends</span>
+    <span class="p">.</span><span class="nx">where</span><span class="p">(</span><span class="s1">'[firstName+lastName]'</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">equals</span><span class="p">([</span><span class="s1">'Hillary'</span><span class="p">,</span> <span class="s1">'Clinton'</span><span class="p">])</span>
+    <span class="p">.</span><span class="nx">toArray</span><span class="p">()</span>
+    <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="s1">'DataError'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// May fail in IE/Edge because it lacks support for compound keys.</span>
+      <span class="c1">// Use a fallback method:</span>
+      <span class="k">return</span> <span class="nx">db</span><span class="p">.</span><span class="nx">friends</span>
+        <span class="p">.</span><span class="nx">where</span><span class="p">(</span><span class="s1">'firstName'</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">equals</span><span class="p">(</span><span class="s1">'Hillary'</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">and</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">friend</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">return</span> <span class="nx">friend</span><span class="p">.</span><span class="nx">lastName</span> <span class="o">==</span> <span class="s1">'Clinton'</span><span class="p">;</span>
+        <span class="p">});</span>
+    <span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>In the above exampe, we are handling the error because we know it may happen and we have a way to solve that.</p>
+
+<p>What about if you want to log stuff for debugging purpose? Just remember to rethrow the error if you do.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">myFunc</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+        <span class="k">return</span> <span class="nx">db</span><span class="p">.</span><span class="nx">friends</span><span class="p">.</span><span class="nx">add</span><span class="p">({</span><span class="na">name</span><span class="p">:</span> <span class="s1">'foo'</span><span class="p">});</span>
+    <span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">"Failed to add foo!: "</span> <span class="o">+</span> <span class="nx">err</span><span class="p">);</span>
+        <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span> <span class="c1">// Re-throw the error to abort flow!</span>
+    <span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">){</span>
+        <span class="k">return</span> <span class="nx">db</span><span class="p">.</span><span class="nx">pets</span><span class="p">.</span><span class="nx">add</span><span class="p">({</span><span class="na">name</span><span class="p">:</span> <span class="s1">'bar'</span><span class="p">,</span> <span class="na">daddy</span><span class="p">:</span> <span class="nx">id</span><span class="p">});</span>
+    <span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">"Failed to add bar!: "</span> <span class="o">+</span> <span class="nx">err</span><span class="p">);</span>
+        <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span> <span class="c1">// Re-throw the error!</span>
+    <span class="p">}).</span><span class="nx">then</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="p">...</span>
+    <span class="p">});</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<h3 id="3-avoid-using-other-async-apis-inside-transactions">3. Avoid using other async APIs inside transactions</h3>
+
+<p>IndexedDB will commit a transaction as soon as it isn’t used within a tick. This means that you MUST NOT call any other async API (at least not wait for it to finish) within a transaction scope. If you do, you will get a TransactionInactiveError thrown at you as soon as you try to use the transaction after having waited for the other async API.</p>
+
+<p>In case you really need to call a short-lived async-API, Dexie 2.0 can actually keep your transaction alive for you if you use <a href="https://dexie.org/docs/Dexie/Dexie.waitFor()">Dexie.waitFor()</a>.</p>
+
+<h3 id="4-stick-to-dexiepromise-and-never-use-another-promises-within-transactions"><del>4. Stick to Dexie.Promise and never use another Promises within transactions!</del></h3>
+
+<p><del><a href="/docs/Promise/Promise">Dexie.Promise</a> is ES6 and A+ compliant, meaning that you can use any favourite promise together with Dexie. However, within transactions, DO NOT use any other promise implementation than Dexie.Promise! Otherwise the effective transaction will be gone.</del></p>
+
+<p>This part is no more relevant with Dexie 2.0. Instead:</p>
+
+<h3 id="4-use-the-global-promise-within-transactions">4. Use the global Promise within transactions!</h3>
+
+<p>Make sure to use the <strong>global</strong> promise (window.Promise) within transactions. You may use a Promise polyfill for old browsers like IE10/IE11, but just make sure to put it on window.Promise in your page bootstrap.</p>
+
+<h4 id="ok">OK:</h4>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">PromisePolyfill</span> <span class="k">from</span> <span class="s1">'promise-polyfill-of-your-choice'</span><span class="p">;</span> 
+
+<span class="c1">// To add to window</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">window</span><span class="p">.</span><span class="nb">Promise</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nb">window</span><span class="p">.</span><span class="nb">Promise</span> <span class="o">=</span> <span class="nx">PromisePolyfill</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="p">...</span>
+
+<span class="nx">db</span><span class="p">.</span><span class="nx">transaction</span><span class="p">(...,</span> <span class="p">()</span><span class="o">=&gt;</span><span class="p">{</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">()</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">race</span><span class="p">()</span>
+    <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="p">...</span> <span class="p">})</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<h4 id="not-ok">NOT OK:</h4>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nb">Promise</span> <span class="nx">form</span> <span class="s1">'promise-polyfill-of-your-choice'</span><span class="p">;</span> 
+
+<span class="nx">db</span><span class="p">.</span><span class="nx">transaction</span><span class="p">(...,</span> <span class="p">()</span><span class="o">=&gt;</span><span class="p">{</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">()</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">race</span><span class="p">()</span>
+    <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="p">...</span> <span class="p">})</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<p>In the case you write a library (not an app) and you want your library to work on old browsers without requiring a Promise polyfill, it is still safe to use Dexie.Promise:</p>
+
+<h4 id="still-also-ok">STILL ALSO OK:</h4>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">db</span><span class="p">.</span><span class="nx">transaction</span><span class="p">(...,</span> <span class="p">()</span><span class="o">=&gt;</span><span class="p">{</span>
+    <span class="nx">Dexie</span><span class="p">.</span><span class="nb">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">()</span>
+    <span class="nx">Dexie</span><span class="p">.</span><span class="nb">Promise</span><span class="p">.</span><span class="nx">race</span><span class="p">()</span>
+    <span class="k">new</span> <span class="nx">Dexie</span><span class="p">.</span><span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="p">...</span> <span class="p">})</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<h3 id="5-use-transaction-scopes-wherever-you-gonna-make-more-than-one-operation">5. Use transaction() scopes wherever you gonna make more than one operation</h3>
+<p>Whenever you are going to do more than a single operation on your database in a sequence, use a transaction. This will not only encapsulate your changes into an atomic operation, but also optimize your code! Internally, non-transactional operations also use a transaction but it is only used in the single operation, so if you surround your code within a transaction, you will perform less costly operations in total.</p>
+
+<p>Using transactions gives you the following benefits:</p>
+
+<ul>
+  <li>Robustness: If any error occur, transaction will be rolled back!</li>
+  <li>Simpler code: You may do all operations sequencially - they get queued on the transaction.</li>
+  <li>One single line to catch them all - exceptions, errors wherever they occur.</li>
+  <li>You can just fire off database operations without handling returned promises. The transaction block will catch any error explicitely.</li>
+  <li>Faster execution</li>
+  <li>Remember that a browser can close down at any moment. Think about what would happen if the user closes the browser somewhere between your operations. Would that lead to an invalid state? If so, use a transaction - that will make all operations abort if browser is closed between operations.</li>
+</ul>
+
+<p>Here is how you enter a transaction block:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">db</span><span class="p">.</span><span class="nx">transaction</span><span class="p">(</span><span class="s2">"rw"</span><span class="p">,</span> <span class="nx">db</span><span class="p">.</span><span class="nx">friends</span><span class="p">,</span> <span class="nx">db</span><span class="p">.</span><span class="nx">pets</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">db</span><span class="p">.</span><span class="nx">friends</span><span class="p">.</span><span class="nx">add</span><span class="p">({</span><span class="na">name</span><span class="p">:</span> <span class="s2">"Måns"</span><span class="p">,</span> <span class="na">isCloseFriend</span><span class="p">:</span> <span class="mi">1</span><span class="p">});</span> <span class="c1">// unhandled promise = ok!</span>
+    <span class="nx">db</span><span class="p">.</span><span class="nx">friends</span><span class="p">.</span><span class="nx">add</span><span class="p">({</span><span class="na">name</span><span class="p">:</span> <span class="s2">"Nils"</span><span class="p">,</span> <span class="na">isCloseFriend</span><span class="p">:</span> <span class="mi">1</span><span class="p">});</span> <span class="c1">// unhandled promise = ok!</span>
+    <span class="nx">db</span><span class="p">.</span><span class="nx">friends</span><span class="p">.</span><span class="nx">add</span><span class="p">({</span><span class="na">name</span><span class="p">:</span> <span class="s2">"Jon"</span><span class="p">,</span> <span class="na">isCloseFriend</span><span class="p">:</span> <span class="mi">1</span><span class="p">});</span>  <span class="c1">// unhandled promise = ok!</span>
+    <span class="nx">db</span><span class="p">.</span><span class="nx">pets</span><span class="p">.</span><span class="nx">add</span><span class="p">({</span><span class="na">name</span><span class="p">:</span> <span class="s2">"Josephina"</span><span class="p">,</span> <span class="na">kind</span><span class="p">:</span> <span class="s2">"dog"</span><span class="p">});</span>    <span class="c1">// unhandled promise = ok!</span>
+    <span class="c1">// If any of the promises above fails, transaction will abort and it's promise</span>
+    <span class="c1">// reject.</span>
+
+    <span class="c1">// Since we are in a transaction, we can query the table right away and</span>
+    <span class="c1">// still get the results of the write operations above.</span>
+    <span class="kd">var</span> <span class="nx">promise</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">friends</span><span class="p">.</span><span class="nx">where</span><span class="p">(</span><span class="s2">"isCloseFriend"</span><span class="p">).</span><span class="nx">equals</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="nx">toArray</span><span class="p">();</span>
+
+    <span class="c1">// Make the transaction resolve with the last promise result</span>
+    <span class="k">return</span> <span class="nx">promise</span><span class="p">;</span>
+
+<span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">closeFriends</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="c1">// Transaction complete.</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"My close friends: "</span> <span class="o">+</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">closeFriends</span><span class="p">));</span>
+
+<span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="c1">// Log or display the error.</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+    <span class="c1">// Notice that when using a transaction, it's enough to catch</span>
+    <span class="c1">// the transaction Promise instead of each db operation promise.</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>Notes:</p>
+<ul>
+  <li><code class="highlighter-rouge">friends</code> and <code class="highlighter-rouge">pets</code> are objectStores registered using <a href="/docs/Version/Version.stores()">Version.stores()</a> method.</li>
+  <li><code class="highlighter-rouge">"rw"</code> should be replaced with <code class="highlighter-rouge">"r"</code> if you are just going to read from database.</li>
+  <li>Also errors occurring in nested callbacks in the block will be catched by the catch() method.</li>
+</ul>
+
+<h3 id="6-rethrow-errors-if-transaction-should-be-aborted">6. Rethrow errors if transaction should be aborted</h3>
+
+<p>Saying this again.</p>
+
+<p>When you catch database operations explicitely for logging purpose, transaction will not abort unless you rethrow the error or return the rejected Promise.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">db</span><span class="p">.</span><span class="nx">transaction</span><span class="p">(</span><span class="s2">"rw"</span><span class="p">,</span> <span class="nx">db</span><span class="p">.</span><span class="nx">friends</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">([</span>
+        <span class="nx">db</span><span class="p">.</span><span class="nx">friends</span><span class="p">.</span><span class="nx">add</span> <span class="p">({</span><span class="na">name</span><span class="p">:</span> <span class="s2">"Måns"</span><span class="p">,</span> <span class="na">isCloseFriend</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+          <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+              <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">"Couldnt add Måns to the database"</span><span class="p">);</span>
+              <span class="c1">// If not rethrowing here, error will be regarded as "handled"</span>
+              <span class="c1">// and transaction would not abort.</span>
+              <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
+          <span class="p">}),</span>
+        <span class="nx">db</span><span class="p">.</span><span class="nx">friends</span><span class="p">.</span><span class="nx">add</span> <span class="p">({</span><span class="na">name</span><span class="p">:</span> <span class="s2">"Nils"</span><span class="p">,</span> <span class="na">isCloseFriend</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+   <span class="p">]);</span>
+<span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// transaction committed</span>
+<span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// transaction failed</span>
+<span class="p">});</span>
+</code></pre></div></div>
+<p>If not rethrowing the error, Nils would be successfully added and transaction would commit since the error is regarded as handled when you catch the database operation.</p>
+
+<p>An alternate way of rethrowing the error is to replace <code class="highlighter-rouge">throw error;</code> with <code class="highlighter-rouge">return Promise.reject(error)</code>.</p>
+
+<h3 id="7-optionally-declare-classes">7. (Optionally:) Declare Classes</h3>
+
+<p>When you declare your object stores (<code class="highlighter-rouge">db.version(1).stores({...})</code>), you only specify nescessary indexes, not all properties. A good practice is to have a more detailed class declaration for your persistant classes. It will help the IDE with autocomplete making life easier for you while coding. Also, it is very good to have a reference somewhere of what properties are actually used on your objects.</p>
+
+<p>There are two different methods available to accomplish this. Use whichever you prefer:</p>
+
+<ol>
+  <li><a href="/docs/Table/Table.mapToClass()">mapToClass()</a> - map an existing class to an objectStore</li>
+  <li><a href="/docs/Table/Table.defineClass()">defineClass()</a> - let Dexie declare a class for you</li>
+</ol>
+
+<p>Whichever method you use, your database will return real instances of your mapped class, so that the expression</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="nx">obj</span> <span class="k">instanceof</span> <span class="nx">Class</span><span class="p">)</span>
+</code></pre></div></div>
+<p>will return true, and you may use any methods declared via</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">Class</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">method</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){}</span>
+</code></pre></div></div>
+<p>.</p>
+
+<h5 id="method-1-use-maptoclass-map-existing-class">Method 1: Use <a href="/docs/Table/Table.mapToClass()">mapToClass()</a> (map existing class)</h5>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">db</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Dexie</span><span class="p">(</span><span class="s2">"MyAppDB"</span><span class="p">);</span>
+
+<span class="nx">db</span><span class="p">.</span><span class="nx">version</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="nx">stores</span><span class="p">({</span>
+    <span class="na">folders</span><span class="p">:</span> <span class="s2">"++id,&amp;path"</span><span class="p">,</span>
+    <span class="na">files</span><span class="p">:</span> <span class="s2">"++id,filename,extension,folderId"</span>
+<span class="p">});</span>
+
+<span class="c1">// Folder class</span>
+<span class="kd">function</span> <span class="nx">Folder</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span> <span class="nx">description</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">path</span> <span class="o">=</span> <span class="nx">path</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">description</span> <span class="o">=</span> <span class="nx">description</span><span class="p">;</span> 
+<span class="p">}</span>
+<span class="nx">Folder</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">save</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">db</span><span class="p">.</span><span class="nx">folders</span><span class="p">.</span><span class="nx">put</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">/// File class</span>
+<span class="kd">function</span> <span class="nx">File</span><span class="p">(</span><span class="nx">filename</span><span class="p">,</span> <span class="nx">extention</span><span class="p">,</span> <span class="nx">parentFolderId</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">filename</span> <span class="o">=</span> <span class="nx">filename</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">extention</span> <span class="o">=</span> <span class="nx">extention</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">folderId</span> <span class="o">=</span> <span class="nx">parentFolderId</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">File</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">save</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">db</span><span class="p">.</span><span class="nx">files</span><span class="p">.</span><span class="nx">put</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">db</span><span class="p">.</span><span class="nx">folders</span><span class="p">.</span><span class="nx">mapToClass</span><span class="p">(</span><span class="nx">Folder</span><span class="p">);</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">files</span><span class="p">.</span><span class="nx">mapToClass</span><span class="p">(</span><span class="nx">File</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h5 id="method-2-use-defineclass">Method 2: Use <a href="/docs/Table/Table.defineClass()">defineClass()</a></h5>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">db</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Dexie</span><span class="p">(</span><span class="s2">"MyAppDB"</span><span class="p">);</span>
+
+<span class="nx">db</span><span class="p">.</span><span class="nx">version</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="nx">stores</span><span class="p">({</span>
+    <span class="na">folders</span><span class="p">:</span> <span class="s2">"++id,&amp;path"</span><span class="p">,</span>
+    <span class="na">files</span><span class="p">:</span> <span class="s2">"++id,filename,extension,folderId"</span>
+<span class="p">});</span>
+
+<span class="kd">var</span> <span class="nx">Folder</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">folders</span><span class="p">.</span><span class="nx">defineClass</span><span class="p">({</span>
+    <span class="na">id</span><span class="p">:</span> <span class="nb">Number</span><span class="p">,</span>
+    <span class="na">path</span><span class="p">:</span> <span class="nb">String</span><span class="p">,</span>
+    <span class="na">description</span><span class="p">:</span> <span class="nb">String</span>
+<span class="p">});</span>
+
+<span class="nx">Folder</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">save</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">db</span><span class="p">.</span><span class="nx">folders</span><span class="p">.</span><span class="nx">put</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">File</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">files</span><span class="p">.</span><span class="nx">defineClass</span><span class="p">({</span>
+    <span class="na">id</span><span class="p">:</span> <span class="nb">Number</span><span class="p">,</span>
+    <span class="na">filename</span><span class="p">:</span> <span class="nb">String</span><span class="p">,</span>
+    <span class="na">extension</span><span class="p">:</span> <span class="nb">String</span><span class="p">,</span>
+    <span class="na">folderId</span><span class="p">:</span> <span class="nb">Number</span><span class="p">,</span>
+    <span class="na">tags</span><span class="p">:</span> <span class="p">[</span><span class="nb">String</span><span class="p">]</span>
+<span class="p">});</span>
+
+<span class="nx">File</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">save</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">db</span><span class="p">.</span><span class="nx">files</span><span class="p">.</span><span class="nx">put</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<h3 id="back-to-tutorial"><a href="/docs/Tutorial">Back to Tutorial</a></h3>
+
+      </div>
+    </div>
+  </div>
+  <div class="col-xs-12 col-md-4">
+    <div class="row docs-page-subheader">
+      <h3>Table of Contents</h3>
+      <div class="docs-toc-wrapper">
+        <ul class="docs-toc">
+          
+          
+            
+          
+            
+          
+            
+              <li>
+                <a href="/docs/API-Reference">API Reference</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Tutorial/Best-Practices">Best Practices</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Tutorial/Building-Addons">Building Addons</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection">Collection</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.and()">Collection.and()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.clone()">Collection.clone()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.count()">Collection.count()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.delete()">Collection.delete()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.desc()">Collection.desc()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.distinct()">Collection.distinct()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.each()">Collection.each()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.eachKey()">Collection.eachKey()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.eachPrimaryKey()">Collection.eachPrimaryKey()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.eachUniqueKey()">Collection.eachUniqueKey()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.filter()">Collection.filter()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.first()">Collection.first()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.keys()">Collection.keys()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.last()">Collection.last()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.limit()">Collection.limit()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.modify()">Collection.modify()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.offset()">Collection.offset()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.or()">Collection.or()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.primaryKeys()">Collection.primaryKeys()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.raw()">Collection.raw()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.reverse()">Collection.reverse()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.sortBy()">Collection.sortBy()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.toArray()">Collection.toArray()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.uniqueKeys()">Collection.uniqueKeys()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Collection/Collection.until()">Collection.until()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Compound-Index">Compound Index</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Tutorial/Consuming-dexie-as-a-module">Consuming Dexie as a module</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Deprecations">Deprecations</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DerivedWork">Derived Work</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Tutorial/Design">Design</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie">Dexie</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.AbortError">Dexie.AbortError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.BulkError">Dexie.BulkError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.ConstraintError">Dexie.ConstraintError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.DataCloneError">Dexie.DataCloneError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.DataError">Dexie.DataError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.DatabaseClosedError">Dexie.DatabaseClosedError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.IncompatiblePromiseError">Dexie.IncompatiblePromiseError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.InternalError">Dexie.InternalError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.InvalidAccessError">Dexie.InvalidAccessError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.InvalidArgumentError">Dexie.InvalidArgumentError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.InvalidStateError">Dexie.InvalidStateError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.InvalidTableError">Dexie.InvalidTableError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.MissingAPIError">Dexie.MissingAPIError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.ModifyError">Dexie.ModifyError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.NoSuchDatabaseError">Dexie.NoSuchDatabaseErrorError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.NotFoundError">Dexie.NotFoundError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Observable/Dexie.Observable">Dexie.Observable</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Observable/Dexie.Observable.DatabaseChange">Dexie.Observable.DatabaseChange</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.OpenFailedError">Dexie.OpenFailedError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.PrematureCommitError">Dexie.PrematureCommitError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.QuotaExceededError">Dexie.QuotaExceededError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.ReadOnlyError">Dexie.ReadOnlyError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.SchemaError">Dexie.SchemaError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.SubTransactionError">Dexie.SubTransactionError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/Dexie.Syncable.js">Dexie.Syncable</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/Dexie.Syncable.IDatabaseChange">Dexie.Syncable.IDatabaseChange</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/Dexie.Syncable.IPersistedContext">Dexie.Syncable.IPersistentContext</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/Dexie.Syncable.ISyncProtocol">Dexie.Syncable.ISyncProtocol</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/Dexie.Syncable.StatusTexts">Dexie.Syncable.StatusTexts</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/Dexie.Syncable.Statuses">Dexie.Syncable.Statuses</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/Dexie.Syncable.registerSyncProtocol()">Dexie.Syncable.registerSyncProtocol()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.TimeoutError">Dexie.TimeoutError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.TransactionInactiveError">Dexie.TransactionInactiveError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.UnknownError">Dexie.UnknownError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.UnsupportedError">Dexie.UnsupportedError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.UpgradeError">Dexie.UpgradeError()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.VersionChangeError">Dexie.VersionChangeError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/Dexie.VersionError">Dexie.VersionError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.%5Btable%5D">Dexie.[table]</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.addons">Dexie.addons</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.async()">Dexie.async()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.backendDB()">Dexie.backendDB()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.close()">Dexie.close()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.currentTransaction">Dexie.currentTransaction</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.debug">Dexie.debug</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.deepClone()">Dexie.deepClone()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.defineClass()">Dexie.defineClass()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.delByKeyPath()">Dexie.delByKeyPath()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.delete()">Dexie.delete()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.derive()">Dexie.derive()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.events()">Dexie.events()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.exists()">Dexie.exists()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.extend()">Dexie.extend()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.fakeAutoComplete()">Dexie.fakeAutoComplete()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.getByKeyPath()">Dexie.getByKeyPath()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.getDatabaseNames()">Dexie.getDatabaseNames()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.hasFailed()">Dexie.hasFailed()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.ignoreTransaction()">Dexie.ignoreTransaction()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.isOpen()">Dexie.isOpen()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie.js">Dexie.js</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.name">Dexie.name</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.on()">Dexie.on()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.on.blocked">Dexie.on.blocked</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.on.error">Dexie.on.error</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.on.populate">Dexie.on.populate</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.on.populate-(old-version)">Dexie.on.populate-(old-version)</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.on.ready">Dexie.on.ready</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.on.versionchange">Dexie.on.versionchange</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.open()">Dexie.open()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.override()">Dexie.override()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.semVer">Dexie.semVer</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.setByKeyPath()">Dexie.setByKeyPath()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.shallowClone()">Dexie.shallowClone()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.spawn()">Dexie.spawn()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.table()">Dexie.table()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.tables">Dexie.tables</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.transaction()">Dexie.transaction()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.transaction()-(old-version)">Dexie.transaction()-(old-version)</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.verno">Dexie.verno</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.version">Dexie.version</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.version()">Dexie.version()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.vip()">Dexie.vip()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Dexie/Dexie.waitFor()">Dexie.waitFor()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/DexieErrors/DexieError">DexieError</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/">Docs Home</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Download">Download</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/ExportImport/dexie-export-import">Export and Import Database</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Tutorial/Getting-started">Getting Started</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Tutorial/Hello-World">Hello World</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/StorageManager">How To Use the StorageManager API</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/inbound">Inbound</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/IndexSpec">IndexSpec</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Indexable-Type">Indexable Type</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/IndexedDB-on-Safari">IndexedDB on Safari</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Tutorial/Migrating-existing-DB-to-Dexie">Migrating existing DB to Dexie</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/MultiEntry-Index">MultiEntry Index</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Promise/Promise">Promise</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Promise/Promise.PSD">Promise.PSD</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Promise/Promise.catch()">Promise.catch()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Promise/Promise.finally()">Promise.finally()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Promise/Promise.on.error">Promise.on.error</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Promise/Promise.onuncatched">Promise.onuncatched</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Questions-and-Answers">Questions and Answers</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Releasing-Dexie">Releasing Dexie</a>
+              </li>
+            
+          
+            
+          
+            
+              <li>
+                <a href="/docs/Samples">Samples</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Simplify-with-yield">Simplify with yield</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table">Table</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/TableSchema">Table Schema</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.add()">Table.add()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.bulkAdd()">Table.bulkAdd()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.bulkDelete()">Table.bulkDelete()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.bulkGet()">Table.bulkGet()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.bulkPut()">Table.bulkPut()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.clear()">Table.clear()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.count()">Table.count()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.defineClass()">Table.defineClass()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.delete()">Table.delete()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.each()">Table.each()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.filter()">Table.filter()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.get()">Table.get()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.hook('creating')">Table.hook('creating')</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.hook('deleting')">Table.hook('deleting')</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.hook('reading')">Table.hook('reading')</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.hook('updating')">Table.hook('updating')</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.limit()">Table.limit()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.mapToClass()">Table.mapToClass()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.name">Table.name</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.offset()">Table.offset()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.orderBy()">Table.orderBy()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.put()">Table.put()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.reverse()">Table.reverse()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.schema">Table.schema</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.toArray()">Table.toArray()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.toCollection()">Table.toCollection()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.update()">Table.update()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Table/Table.where()">Table.where()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/The-Three-Main-Limitations-of-IndexedDB">The three main limitations of IndexedDB</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Transaction/Transaction">Transaction</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Transaction/Transaction.abort()">Transaction.abort()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Transaction/Transaction.on.abort">Transaction.on.abort</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Transaction/Transaction.on.complete">Transaction.on.complete</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Transaction/Transaction.on.error">Transaction.on.error</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Transaction/Transaction.table()">Transaction.table()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Tutorial/">Tutorial</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Typescript">Typescript</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Tutorial/Understanding-the-basics">Understanding the basics</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Version/Version">Version</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Version/Version.stores()">Version.stores()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Version/Version.upgrade()">Version.upgrade()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause">WhereClause</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.above()">WhereClause.above()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.aboveOrEqual()">WhereClause.aboveOrEqual()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.anyOf()">WhereClause.anyOf()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.anyOfIgnoreCase()">WhereClause.anyOfIgnoreCase()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.below()">WhereClause.below()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.belowOrEqual()">WhereClause.belowOrEqual()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.between()">WhereClause.between()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.equals()">WhereClause.equals()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.equalsIgnoreCase()">WhereClause.equalsIgnoreCase()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.inAnyRange()">WhereClause.inAnyRange()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.noneOf()">WhereClause.noneOf()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.notEqual()">WhereClause.notEqual()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.startsWith()">WhereClause.startsWith()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.startsWithAnyOf()">WhereClause.startsWithAnyOf()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.startsWithAnyOfIgnoreCase()">WhereClause.startsWithAnyOfIgnoreCase()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/WhereClause/WhereClause.startsWithIgnoreCase()">WhereClause.startsWithIgnoreCase()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/db.syncable.connect()">db.syncable.connect()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/db.syncable.delete()">db.syncable.delete()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/db.syncable.disconnect()">db.syncable.disconnect()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/db.syncable.getOptions()">db.syncable.getOptions()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/db.syncable.getStatus()">db.syncable.getStatus()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/db.syncable.list()">db.syncable.list()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/db.syncable.on('statusChanged')">db.syncable.on('statusChanged')</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Syncable/db.syncable.setFilter()">db.syncable.setFilter()</a>
+              </li>
+            
+          
+            
+              <li>
+                <a href="/docs/Promise/unhandledrejection-event">unhandledrejection-event</a>
+              </li>
+            
+          
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+    </main>
+
+    <footer class="container">
+  <p>Dexie.js - A Minimalistic Wrapper for IndexedDB</p>
+  <p>&copy; 2014-2019 Dexie.js is the creation of David Fahlander.</p>
+</footer>
+
+
+    <script src='/assets/js/prism.js'></script>
+
+		<script>
+			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+			})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+			ga('create', 'UA-7780680-5', 'auto');
+			ga('send', 'pageview');
+    </script>
+    <!-- Include dexie for people wanting to open devtools to laborate -->
+		<script async src='https://unpkg.com/dexie'></script>
+    <!-- Highlight anchors the same way as github wiki works -->
+    <script defer src="/assets/js/highlight-anchors.js"></script>
+    
+  </body>
+
+</html>
